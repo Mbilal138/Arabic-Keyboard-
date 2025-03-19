@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Age Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    .input-group {
+      margin-bottom: 20px;
+    }
+    label {
+      font-size: 1.2rem;
+      color: #555;
+    }
+    select, input {
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin: 5px;
+      width: 30%;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .results {
+      margin-top: 20px;
+      text-align: left;
+      font-size: 1.1rem;
+      color: #333;
+    }
+    .results p {
+      margin: 10px 0;
+    }
+    .highlight {
+      color: #007bff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Age Calculator</h1>
+    <div class="input-group">
+      <label for="day">Day:</label>
+      <select id="day"></select>
+      <label for="month">Month:</label>
+      <select id="month">
+        <option value="0">January</option>
+        <option value="1">February</option>
+        <option value="2">March</option>
+        <option value="3">April</option>
+        <option value="4">May</option>
+        <option value="5">June</option>
+        <option value="6">July</option>
+        <option value="7">August</option>
+        <option value="8">September</option>
+        <option value="9">October</option>
+        <option value="10">November</option>
+        <option value="11">December</option>
+      </select>
+      <label for="year">Year:</label>
+      <select id="year"></select>
+    </div>
+    <button onclick="calculateAge()">Calculate Age</button>
+    <div class="results">
+      <p>Age: <span class="highlight" id="age"></span></p>
+      <p>Months: <span class="highlight" id="months"></span></p>
+      <p>Weeks: <span class="highlight" id="weeks"></span></p>
+      <p>Days: <span class="highlight" id="days"></span></p>
+      <p>Hours: <span class="highlight" id="hours"></span></p>
+      <p>Minutes: <span class="highlight" id="minutes"></span></p>
+      <p>Seconds: <span class="highlight" id="seconds"></span></p>
+      <p>Days left in the next birthday: <span class="highlight" id="nextBirthday"></span></p>
+    </div>
+  </div>
+
+  <script>
+    // Populate days dropdown
+    const daySelect = document.getElementById("day");
+    for (let i = 1; i <= 31; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.text = i;
+      daySelect.appendChild(option);
+    }
+
+    // Populate years dropdown
+    const yearSelect = document.getElementById("year");
+    const currentYear = new Date().getFullYear();
+    for (let i = 1900; i <= currentYear; i++) {
+      const option = document.createElement("option");
+      option.value = i;
+      option.text = i;
+      yearSelect.appendChild(option);
+    }
+
+    // Function to calculate age
+    function calculateAge() {
+      const day = parseInt(document.getElementById("day").value);
+      const month = parseInt(document.getElementById("month").value);
+      const year = parseInt(document.getElementById("year").value);
+
+      const birthDate = new Date(year, month, day);
+      const now = new Date();
+
+      let ageInMilliseconds = now - birthDate;
+
+      // Calculate age in years, months, and days
+      const ageDate = new Date(ageInMilliseconds);
+      const years = Math.abs(ageDate.getUTCFullYear() - 1970);
+      const months = ageDate.getUTCMonth();
+      const days = ageDate.getUTCDate() - 1;
+
+      // Calculate total months, weeks, days, hours, minutes, and seconds
+      const totalMonths = years * 12 + months;
+      const totalWeeks = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24 * 7));
+      const totalDays = Math.floor(ageInMilliseconds / (1000 * 60 * 60 * 24));
+      const totalHours = Math.floor(ageInMilliseconds / (1000 * 60 * 60));
+      const totalMinutes = Math.floor(ageInMilliseconds / (1000 * 60));
+      const totalSeconds = Math.floor(ageInMilliseconds / 1000);
+
+      // Calculate days left until next birthday
+      const nextBirthday = new Date(now.getFullYear(), month, day);
+      if (nextBirthday < now) {
+        nextBirthday.setFullYear(now.getFullYear() + 1);
+      }
+      const daysLeft = Math.ceil((nextBirthday - now) / (1000 * 60 * 60 * 24));
+
+      // Display results
+      document.getElementById("age").textContent = `${years} years ${months} months ${days} days`;
+      document.getElementById("months").textContent = `${totalMonths} months ${days} days`;
+      document.getElementById("weeks").textContent = `${totalWeeks} weeks ${days} days`;
+      document.getElementById("days").textContent = `${totalDays} days`;
+      document.getElementById("hours").textContent = `${totalHours} hours`;
+      document.getElementById("minutes").textContent = `${totalMinutes} minutes`;
+      document.getElementById("seconds").textContent = `${totalSeconds} seconds`;
+      document.getElementById("nextBirthday").textContent = `${daysLeft} days`;
+
+      // Update seconds in real-time
+      setInterval(() => {
+        ageInMilliseconds += 1000;
+        const updatedSeconds = Math.floor(ageInMilliseconds / 1000);
+        document.getElementById("seconds").textContent = `${updatedSeconds} seconds`;
+      }, 1000);
+    }
+  </script>
+</body>
+</html>
